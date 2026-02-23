@@ -544,8 +544,10 @@ FfxResource ffxGetTextureResourceVK(FfxFsr2Context* context, VkImage imgVk, VkIm
     FfxResource resource = {};
     resource.resource = reinterpret_cast<void*>(imgVk);
     resource.state = state;
-    // imageView is a Vulkan handle (pointer-like on 64-bit); use reinterpret_cast
-    resource.descriptorData = reinterpret_cast<uint64_t>(imageView);
+    // imageView is a Vulkan handle (pointer-like).  On 32-bit builds the handle
+    // may be 32 bits wide, so converting directly to uint64_t with reinterpret_cast
+    // is illegal.  Cast through uintptr_t which matches the pointer size first.
+    resource.descriptorData = (uint64_t)(uintptr_t)imageView;
     resource.description.flags = FFX_RESOURCE_FLAGS_NONE;
     resource.description.type = FFX_RESOURCE_TYPE_TEXTURE2D;
     resource.description.width = width;
@@ -677,8 +679,9 @@ FfxErrorCode RegisterResourceVK(
     else
     {
         VkImage image = reinterpret_cast<VkImage>(inFfxResource->resource);
-        // descriptorData stores the image view handle as integer; reinterpret_cast back to VkImageView
-        VkImageView imageView = reinterpret_cast<VkImageView>(inFfxResource->descriptorData);
+        // descriptorData stores the image view handle as integer.  Cast back via
+        // uintptr_t so 32-bit handles are correctly truncated.
+        VkImageView imageView = (VkImageView)(uintptr_t)inFfxResource->descriptorData;
 
         backendResource->imageResource = image;
  
