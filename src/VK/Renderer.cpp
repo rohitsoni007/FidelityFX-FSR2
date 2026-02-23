@@ -262,10 +262,10 @@ void Renderer::OnDestroyWindowSizeDependentResources()
     vkDestroyImageView(m_pDevice->GetDevice(), m_displayOutputSRV, 0);
     vkDestroyRenderPass(m_pDevice->GetDevice(), m_RenderPassDisplayOutput, 0);
     
-    m_OpaqueTextureSRV = nullptr;
-    m_FramebufferDisplayOutput = nullptr;
-    m_displayOutputSRV = nullptr;
-    m_RenderPassDisplayOutput = nullptr;
+    m_OpaqueTextureSRV = VK_NULL_HANDLE;
+    m_FramebufferDisplayOutput = VK_NULL_HANDLE;
+    m_displayOutputSRV = VK_NULL_HANDLE;
+    m_RenderPassDisplayOutput = VK_NULL_HANDLE;
 
     m_displayOutput.OnDestroy();
     m_Bloom.OnDestroyWindowSizeDependentResources();
@@ -998,7 +998,7 @@ void Renderer::OnRender(UIState* pState, const Camera& Cam, SwapChain* pSwapChai
     // Start tracking input/output resources at this point to handle HDR and SDR render paths 
     VkImageView   SRVCurrentInput = m_GBuffer.m_HDRSRV;
     VkImage       ImgCurrentInput = m_GBuffer.m_HDR.Resource();
-    VkFramebuffer CurrentFrambuffer = nullptr;
+    VkFramebuffer CurrentFrambuffer = VK_NULL_HANDLE;
 
     // Always use upscale context, if we don't want one, Spatial can skip upscale (but still do TAA and/or RCAS)
     if (bUseUpscale || bUseTaaRcas)
