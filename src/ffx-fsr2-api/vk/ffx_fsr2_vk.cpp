@@ -544,7 +544,8 @@ FfxResource ffxGetTextureResourceVK(FfxFsr2Context* context, VkImage imgVk, VkIm
     FfxResource resource = {};
     resource.resource = reinterpret_cast<void*>(imgVk);
     resource.state = state;
-    resource.descriptorData = static_cast<uint64_t>(imageView);
+    // imageView is a Vulkan handle (pointer-like on 64-bit); use reinterpret_cast
+    resource.descriptorData = reinterpret_cast<uint64_t>(imageView);
     resource.description.flags = FFX_RESOURCE_FLAGS_NONE;
     resource.description.type = FFX_RESOURCE_TYPE_TEXTURE2D;
     resource.description.width = width;
@@ -676,7 +677,8 @@ FfxErrorCode RegisterResourceVK(
     else
     {
         VkImage image = reinterpret_cast<VkImage>(inFfxResource->resource);
-        VkImageView imageView = static_cast<VkImageView>(inFfxResource->descriptorData);
+        // descriptorData stores the image view handle as integer; reinterpret_cast back to VkImageView
+        VkImageView imageView = reinterpret_cast<VkImageView>(inFfxResource->descriptorData);
 
         backendResource->imageResource = image;
  
