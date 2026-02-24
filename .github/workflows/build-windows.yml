@@ -15,8 +15,8 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Vulkan SDK
-        run: choco install vulkan-sdk --yes
+      - name: Configure x64 Vulkan
+        run: cmake -B build-x64-vk -A x64 -DCMAKE_BUILD_TYPE=Release -DGFX_API=VK .
 
       - name: Configure x64 DX12
         run: cmake -B build-x64-dx12 -A x64 -DCMAKE_BUILD_TYPE=Release -DGFX_API=DX12 .
