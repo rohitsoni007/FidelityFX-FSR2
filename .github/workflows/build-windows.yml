@@ -16,27 +16,44 @@ jobs:
           submodules: recursive
 
       - name: Install Vulkan SDK
-        uses: aarcangeli/setup-vulkan@v2
-        with:
-          version: latest
-          
-      - name: Configure x64
-        run: cmake -B build-x64 -A x64 -DCMAKE_BUILD_TYPE=Release -DGFX_API=DX12 .
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          $vulkanUrl = "https://sdk.lunarg.com/download/latest/windows/vulkan-sdk.exe"
+          Invoke-WebRequest -Uri $vulkanUrl -OutFile vulkan-sdk.exe
+          .\vulkan-sdk.exe --accept-licenses --default-answer --confirm-command install
+          del vulkan-sdk.exe
 
-      - name: Build x64
-        run: cmake --build build-x64 --config Release
+      - name: Configure x64 DX12
+        run: cmake -B build-x64-dx12 -A x64 -DCMAKE_BUILD_TYPE=Release -DGFX_API=DX12 .
 
-      - name: Configure x86
-        run: cmake -B build-x86 -A Win32 -DCMAKE_BUILD_TYPE=Release -DGFX_API=DX12 .
+      - name: Build x64 DX12
+        run: cmake --build build-x64-dx12 --config Release
 
-      - name: Build x86
-        run: cmake --build build-x86 --config Release
+      - name: Configure x86 DX12
+        run: cmake -B build-x86-dx12 -A Win32 -DCMAKE_BUILD_TYPE=Release -DGFX_API=DX12 .
+
+      - name: Build x86 DX12
+        run: cmake --build build-x86-dx12 --config Release
+
+      - name: Configure x64 Vulkan
+        run: cmake -B build-x64-vk -A x64 -DCMAKE_BUILD_TYPE=Release -DGFX_API=VK .
+
+      - name: Build x64 Vulkan
+        run: cmake --build build-x64-vk --config Release
+
+      - name: Configure x86 Vulkan
+        run: cmake -B build-x86-vk -A Win32 -DCMAKE_BUILD_TYPE=Release -DGFX_API=VK .
+
+      - name: Build x86 Vulkan
+        run: cmake --build build-x86-vk --config Release
 
       - name: Package binaries
         run: |
           mkdir out
-          copy build-x64\Release\fsr2.dll out\fsr2_x64.dll
-          copy build-x86\Release\fsr2.dll out\fsr2_x86.dll
+          copy build-x64-dx12\Release\fsr2.dll out\fsr2_x64_dx12.dll
+          copy build-x86-dx12\Release\fsr2.dll out\fsr2_x86_dx12.dll
+          copy build-x64-vk\Release\fsr2.dll out\fsr2_x64_vk.dll
+          copy build-x86-vk\Release\fsr2.dll out\fsr2_x86_vk.dll
           powershell -Command "Compress-Archive out fsr2.${{ github.ref_name }}.zip"
 
       - name: Create GitHub release
