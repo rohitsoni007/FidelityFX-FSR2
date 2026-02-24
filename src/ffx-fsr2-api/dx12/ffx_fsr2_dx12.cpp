@@ -800,8 +800,10 @@ FfxErrorCode CreateResourceDX12(
         uint8_t* dst = static_cast<uint8_t*>(uploadBufferData);
         for (uint32_t currentRowIndex = 0; currentRowIndex < createResourceDescription->resourceDescription.height; ++currentRowIndex) {
 
-            memcpy(dst, src, rowSizeInBytes);
-            src += rowSizeInBytes;
+            // rowSizeInBytes is UINT64; memcpy expects a size_t.  Cast explicitly to
+            // suppress C4244 when building with /WX in CI.
+            memcpy(dst, src, static_cast<size_t>(rowSizeInBytes));
+            src += static_cast<size_t>(rowSizeInBytes);
             dst += dx12Footprint.Footprint.RowPitch;
         }
 
