@@ -15,14 +15,19 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install Vulkan SDK
+        uses: aarcangeli/setup-vulkan@v2
+        with:
+          version: latest
+          
       - name: Configure x64
-        run: cmake -B build-x64 -A x64 -DCMAKE_BUILD_TYPE=Release .
+        run: cmake -B build-x64 -A x64 -DCMAKE_BUILD_TYPE=Release -DGFX_API=DX12 .
 
       - name: Build x64
         run: cmake --build build-x64 --config Release
 
       - name: Configure x86
-        run: cmake -B build-x86 -A Win32 -DCMAKE_BUILD_TYPE=Release .
+        run: cmake -B build-x86 -A Win32 -DCMAKE_BUILD_TYPE=Release -DGFX_API=DX12 .
 
       - name: Build x86
         run: cmake --build build-x86 --config Release
