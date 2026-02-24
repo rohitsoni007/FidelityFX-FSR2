@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: Configure x64
         run: cmake -B build-x64 -A x64 -DCMAKE_BUILD_TYPE=Release .
