@@ -211,11 +211,11 @@ void UpscaleContext_Spatial::OnDestroy()
     vkDestroySampler(m_pDevice->GetDevice(), m_samplers[3], nullptr);
     vkDestroySampler(m_pDevice->GetDevice(), m_samplers[4], nullptr);
 
-    m_samplers[0] = nullptr;
-    m_samplers[1] = nullptr;
-    m_samplers[2] = nullptr;
-    m_samplers[3] = nullptr;
-    m_samplers[4] = nullptr;
+    m_samplers[0] = VK_NULL_HANDLE;
+    m_samplers[1] = VK_NULL_HANDLE;
+    m_samplers[2] = VK_NULL_HANDLE;
+    m_samplers[3] = VK_NULL_HANDLE;
+    m_samplers[4] = VK_NULL_HANDLE;
 
     for (int i = 0; i < 3; i++)
     {
@@ -223,16 +223,16 @@ void UpscaleContext_Spatial::OnDestroy()
         m_ResourceViewHeaps.FreeDescriptor(m_UpscaleDescriptorSet[i]);
         m_ResourceViewHeaps.FreeDescriptor(m_RCASDescriptorSet[i]);
 
-        m_TaaDescriptorSet[i] = nullptr;
-        m_UpscaleDescriptorSet[i] = nullptr;
-        m_RCASDescriptorSet[i] = nullptr;
+        m_TaaDescriptorSet[i] = VK_NULL_HANDLE;
+        m_UpscaleDescriptorSet[i] = VK_NULL_HANDLE;
+        m_RCASDescriptorSet[i] = VK_NULL_HANDLE;
     }
 
     vkDestroyDescriptorSetLayout(m_pDevice->GetDevice(), m_TaaDescriptorSetLayout, nullptr);
     vkDestroyDescriptorSetLayout(m_pDevice->GetDevice(), m_UpscaleDescriptorSetLayout, nullptr);
 
-    m_TaaDescriptorSetLayout = nullptr;
-    m_UpscaleDescriptorSetLayout = nullptr;
+    m_TaaDescriptorSetLayout = VK_NULL_HANDLE;
+    m_UpscaleDescriptorSetLayout = VK_NULL_HANDLE;
 
     m_taa.OnDestroy();
     m_taaFirst.OnDestroy();
@@ -279,9 +279,9 @@ void UpscaleContext_Spatial::OnDestroyWindowSizeDependentResources()
     vkDestroyImageView(m_pDevice->GetDevice(), m_TAAIntermediarySrv[1], 0);
     vkDestroyImageView(m_pDevice->GetDevice(), m_FSRIntermediarySrv, 0);
 
-    m_TAAIntermediarySrv[0] = nullptr;
-    m_TAAIntermediarySrv[1] = nullptr;
-    m_FSRIntermediarySrv = nullptr;
+    m_TAAIntermediarySrv[0] = VK_NULL_HANDLE;
+    m_TAAIntermediarySrv[1] = VK_NULL_HANDLE;
+    m_FSRIntermediarySrv = VK_NULL_HANDLE;
 
     m_TAAIntermediary[0].OnDestroy();
     m_TAAIntermediary[1].OnDestroy();
@@ -420,7 +420,7 @@ void UpscaleContext_Spatial::Draw(VkCommandBuffer commandBuffer, const FfxUpscal
     {
         SetPerfMarkerBegin(commandBuffer, "Upscale");
         VkImageView pFsrInput = curInput;
-        VkImageView pFsrOutput = nullptr;
+        VkImageView pFsrOutput = VK_NULL_HANDLE;
 
         if (m_bUseRcas)
         {
