@@ -15,13 +15,12 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Vulkan SDK
-        run: |
-          $ProgressPreference = 'SilentlyContinue'
-          $vulkanUrl = "https://sdk.lunarg.com/download/latest/windows/vulkan-sdk.exe"
-          Invoke-WebRequest -Uri $vulkanUrl -OutFile vulkan-sdk.exe
-          .\vulkan-sdk.exe --accept-licenses --default-answer --confirm-command install
-          del vulkan-sdk.exe
+      - name: Prepare Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.2.1
+        with:
+          vulkan-query-version: 1.4.304.1
+          vulkan-components: Vulkan-Headers, Vulkan-Loader
+          vulkan-use-cache: true
 
       - name: Configure x64 DX12
         run: cmake -B build-x64-dx12 -A x64 -DCMAKE_BUILD_TYPE=Release -DGFX_API=DX12 .
