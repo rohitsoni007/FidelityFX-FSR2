@@ -15,8 +15,13 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Configure x64 Vulkan
-        run: cmake -B build-x64-vk -A x64 -DCMAKE_BUILD_TYPE=Release -DGFX_API=VK .
+      - name: Install Vulkan SDK
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          $vulkanUrl = "https://sdk.lunarg.com/download/latest/windows/vulkan-sdk.exe"
+          Invoke-WebRequest -Uri $vulkanUrl -OutFile vulkan-sdk.exe
+          .\vulkan-sdk.exe --accept-licenses --default-answer --confirm-command install
+          del vulkan-sdk.exe
 
       - name: Configure x64 DX12
         run: cmake -B build-x64-dx12 -A x64 -DCMAKE_BUILD_TYPE=Release -DGFX_API=DX12 .
